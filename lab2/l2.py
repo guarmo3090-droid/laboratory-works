@@ -30,13 +30,12 @@ def harmonic_with_noise(amplitude, frequency, phase, noise_mean, noise_covarianc
     global last_noise_params
 
     omega = 2 * np.pi * frequency
-    clean_harmonic = amplitude * np.sin(omega * T + phase)
+    clean_harmonic = amplitude * np.sin(omega*T + phase)
 
     noise_covariance_safe = max(0, noise_covariance)
     
-    params_changed = not (np.isclose(noise_mean, last_noise_params['mean'], atol=1e-5) and
-                          np.isclose(noise_covariance_safe, last_noise_params['covariance'], atol=1e-5))
-                          
+    params_changed = not(np.isclose(noise_mean, last_noise_params['mean'], atol=1e-5) and np.isclose(noise_covariance_safe, last_noise_params['covariance'], atol=1e-5))
+                     
     if params_changed:
         noise_std = np.sqrt(noise_covariance_safe)
         global_noise_sample = np.random.normal(noise_mean, noise_std, N)
@@ -52,13 +51,12 @@ def harmonic_with_noise(amplitude, frequency, phase, noise_mean, noise_covarianc
     return clean_harmonic, noisy_harmonic
 
 def filter_signal(signal_data, cutoff_frequency, sampling_rate, order):
- 
-    nyquist = 0.5 * sampling_rate
+    quist = 0.5 * sampling_rate
     
-    if cutoff_frequency <= 0 or cutoff_frequency >= nyquist:
+    if cutoff_frequency <= 0 or cutoff_frequency >= quist:
         return signal_data
         
-    normalized_cutoff = cutoff_frequency / nyquist
+    normalized_cutoff = cutoff_frequency / quist
     b, a = signal.butter(order, normalized_cutoff, btype='low', analog=False)
     filtered_signal = signal.filtfilt(b, a, signal_data)
     
@@ -81,7 +79,7 @@ def update_plot(val):
     clean_harmonic, noisy_harmonic = harmonic_with_noise(
         amplitude, frequency, phase, noise_mean, noise_covariance, show_noise_toggle
     )
-    
+
     filtered_harmonic = filter_signal(
         clean_harmonic + global_noise_sample, cutoff_frequency, SAMPLING_RATE, ORDER
     )
@@ -140,7 +138,7 @@ clean_init, noisy_init = harmonic_with_noise(
 filtered_init = filter_signal(clean_init + global_noise_sample, INIT_CUTOFF_FREQUENCY, SAMPLING_RATE, ORDER)
 
 line_noisy, = ax.plot(T, noisy_init, color='orange', linewidth=2, label='Зашумлений Сигнал')
-line_filtered, = ax.plot(T, filtered_init, color='blue', linewidth=3, alpha=0.7, label='Відфільтрований Сигнал', visible=False)
+line_filtered, = ax.plot(T, filtered_init, color='blue', linewidth=3, label='Відфільтрований Сигнал', visible=False)
 line_clean, = ax.plot(T, clean_init, color='purple', linestyle='--', linewidth=1.5, label='Чиста Гармоніка', visible=False)
 
 ax.set_title(f'Інтерактивна гармоніка з шумом({ORDER}-го порядку)')
