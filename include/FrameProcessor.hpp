@@ -11,9 +11,6 @@ private:
     std::vector<cv::Rect> rectangles;
     cv::Point startPoint;
     bool isDragging;
-    
-    // Допоміжні зображення
-    cv::Mat pipImage;
 
 public:
     FrameProcessor();
@@ -35,3 +32,5 @@ private:
     void drawOverlay(cv::Mat& frame, const KeyProcessor& keyProc);
     void applyTransformations(cv::Mat& frame, const KeyProcessor& keyProc);
 };
+
+
