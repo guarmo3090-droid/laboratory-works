@@ -1,0 +1,3 @@
+/home/dania/labs/lab3/build/CMakeFiles/VideoFiltersApp.dir
+/home/dania/labs/lab3/build/CMakeFiles/edit_cache.dir
+/home/dania/labs/lab3/build/CMakeFiles/rebuild_cache.dir
