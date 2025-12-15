@@ -1,5 +1,0 @@
-build/
-*.o*.outVideoFiltersApp
-.vscode/.idea/*.swp.DS_Store
-CMakeCache.txtCMakeFiles/cmake_install.cmakeMakefile
-

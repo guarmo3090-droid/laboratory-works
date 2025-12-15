@@ -3,13 +3,13 @@
 #include <iostream>
 #include <vector>
 #include <string>
-#include <algorithm> // Додано для std::clamp
+#include <algorithm>
 
-using namespace std;
 
 FrameProcessor::FrameProcessor() 
     : brightness(50), isDragging(false) {
-    // pipImage більше не потрібен, тому видаляємо його ініціалізацію
+    
+    faceDetector.init("models/deploy.prototxt", "models/res10_300x300_ssd_iter_140000.caffemodel");
 }
 
 int* FrameProcessor::getBrightnessPtr() {
@@ -24,7 +24,6 @@ void FrameProcessor::onMouse(int event, int x, int y, int flags, void* userdata)
 }
 
 void FrameProcessor::onTrackbar(int, void*) {
-    // Значення автоматично оновлюється через вказівник
 }
 
 void FrameProcessor::handleMouse(int event, int x, int y, int flags) {
@@ -42,14 +41,31 @@ void FrameProcessor::handleMouse(int event, int x, int y, int flags) {
 void FrameProcessor::process(cv::Mat& frame, const KeyProcessor& keyProc) {
     if (frame.empty()) return;
 
-    // Застосування яскравості
     double beta = (brightness - 50.0) * 2.0;
     frame.convertTo(frame, -1, 1.0, beta);
 
-    // Геометричні трансформації
     applyTransformations(frame, keyProc);
 
-    // Фільтри
+    if (keyProc.isFaceDetectionEnabled()) {
+        faceDetector.start(); 
+        
+        faceDetector.updateFrame(frame);
+        
+        vector<cv::Rect> faces = faceDetector.getDetectedFaces();
+        
+        for (const auto& face : faces) {
+            cv::rectangle(frame, face, cv::Scalar(50, 255, 50), 2);
+            
+            cv::line(frame, cv::Point(face.x, face.y), cv::Point(face.x + 10, face.y), cv::Scalar(50, 255, 50), 2);
+            cv::line(frame, cv::Point(face.x, face.y), cv::Point(face.x, face.y + 10), cv::Scalar(50, 255, 50), 2);
+            
+            cv::putText(frame, "TARGET", cv::Point(face.x, face.y - 5), 
+                       cv::FONT_HERSHEY_SIMPLEX, 0.4, cv::Scalar(50, 255, 50), 1);
+        }
+    } else {
+        faceDetector.stop(); 
+    }
+
     cv::Mat processed;
     switch (keyProc.getMode()) {
         case ProcessingMode::Invert:
@@ -84,43 +100,31 @@ void FrameProcessor::process(cv::Mat& frame, const KeyProcessor& keyProc) {
             break;
             
         case ProcessingMode::Pip: {
-            // === ОНОВЛЕНА ЛОГІКА PiP (Scope Zoom) ===
             cv::Point cross = keyProc.getCrossPos();
-            
-            int scopeSize = 100; // Розмір області, яку вирізаємо (в пікселях)
-            int pipScale = 3;    // Коефіцієнт збільшення (зум)
-            int pipSize = scopeSize * pipScale; // Розмір вікна на екрані
+            int scopeSize = 100;
+            int pipScale = 3;   
+            int pipSize = scopeSize * pipScale; 
 
-            // 1. Визначаємо координати області вирізання (ROI)
-            // std::clamp гарантує, що ми не вийдемо за межі зображення
-            int x1 = std::clamp(cross.x - scopeSize / 2, 0, frame.cols - scopeSize);
-            int y1 = std::clamp(cross.y - scopeSize / 2, 0, frame.rows - scopeSize);
+            int x1 = clamp(cross.x - scopeSize / 2, 0, frame.cols - scopeSize);
+            int y1 = clamp(cross.y - scopeSize / 2, 0, frame.rows - scopeSize);
             
-            // 2. Вирізаємо та збільшуємо
             cv::Rect srcRect(x1, y1, scopeSize, scopeSize);
             cv::Mat crop = frame(srcRect);
             
             cv::Mat zoomedPip;
-            // Використовуємо INTER_NEAREST для ефекту "піксельного" прицілу або INTER_LINEAR для гладкості
             cv::resize(crop, zoomedPip, cv::Size(pipSize, pipSize), 0, 0, cv::INTER_NEAREST);
             
-            // 3. Декор: рамка та перехрестя всередині зуму
             cv::rectangle(zoomedPip, cv::Rect(0, 0, pipSize, pipSize), cv::Scalar(0, 255, 0), 3);
-            // Вертикальна лінія
             cv::line(zoomedPip, cv::Point(pipSize/2, 0), cv::Point(pipSize/2, pipSize), cv::Scalar(0, 255, 0), 1);
-            // Горизонтальна лінія
             cv::line(zoomedPip, cv::Point(0, pipSize/2), cv::Point(pipSize, pipSize/2), cv::Scalar(0, 255, 0), 1);
 
-            // 4. Розміщення на екрані (Правий верхній кут за замовчуванням)
             int destX = frame.cols - pipSize - 20;
             int destY = 20;
             
-            // Якщо основний приціл заходить під вікно PiP, переміщаємо вікно в лівий кут
             if (cross.x > destX - 50 && cross.y < destY + pipSize + 50) {
                 destX = 20;
             }
             
-            // Накладаємо, перевіряючи межі
             if (destX >= 0 && destY >= 0 && destX + pipSize <= frame.cols && destY + pipSize <= frame.rows) {
                  zoomedPip.copyTo(frame(cv::Rect(destX, destY, pipSize, pipSize)));
             }
@@ -131,12 +135,10 @@ void FrameProcessor::process(cv::Mat& frame, const KeyProcessor& keyProc) {
             break;
     }
 
-    // Малювання прямокутників
     for (const auto& rect : rectangles) {
         cv::rectangle(frame, rect, cv::Scalar(0, 255, 255), 2);
     }
 
-    // Оверлей
     drawOverlay(frame, keyProc);
 }
 
@@ -166,15 +168,16 @@ void FrameProcessor::applyGlitch(cv::Mat& frame) {
 }
 
 void FrameProcessor::drawOverlay(cv::Mat& frame, const KeyProcessor& keyProc) {
-    // Хрестик
     cv::Point cross = keyProc.getCrossPos();
     cv::drawMarker(frame, cross, cv::Scalar(0, 0, 255), cv::MARKER_CROSS, 20, 2);
 
-    // Текст статистики
     string info = "Mode: " + to_string((int)keyProc.getMode()) + 
                   " | Zoom: " + to_string(keyProc.getZoom()).substr(0,3) + 
                   " | Rot: " + to_string((int)keyProc.getRotation());
     
+    string faceStatus = keyProc.isFaceDetectionEnabled() ? " [DNN: ON]" : " [DNN: OFF]";
+    info += faceStatus;
+
     static double lastTime = 0;
     double currentTime = cv::getTickCount();
     double fps = cv::getTickFrequency() / (currentTime - lastTime);

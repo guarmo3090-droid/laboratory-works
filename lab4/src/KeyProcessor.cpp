@@ -1,17 +1,19 @@
 #include "KeyProcessor.hpp"
-#include <iostream>
 #include <algorithm> 
 
-using namespace std;
-
 KeyProcessor::KeyProcessor() 
-    : currentMode(ProcessingMode::None), shouldExit(false), 
+    : currentMode(ProcessingMode::None), shouldExit(false), faceDetectionMode(false),
       rotationAngle(0.0f), zoomLevel(1.0f), crossX(320), crossY(240) {}
 
 bool KeyProcessor::processKey(int key) {
-    if (key == -1) return false; // Клавіша не натиснута
+    if (key == -1) return false; 
 
-    // Навігація по режимах (клавіші 1-8)
+    if (key == 'f' || key == 'F') {
+        faceDetectionMode = !faceDetectionMode;
+        cout << "Face Detection: " << (faceDetectionMode ? "ON" : "OFF") << endl;
+        return false;
+    }
+
     switch (key) {
         case 27: // ESC
             return true;
@@ -24,13 +26,11 @@ bool KeyProcessor::processKey(int key) {
         case '7': currentMode = ProcessingMode::Glitch; break;
         case '8': currentMode = ProcessingMode::Pip; break;
         
-        // Керування 
-        case 'r': rotationAngle += 5.0f; break; // Rotate Right
-        case 'l': rotationAngle -= 5.0f; break; // Rotate Left
-        case '+': case '=': zoomLevel += 0.1f; break; // Zoom In
-        case '-': case '_': zoomLevel = max(0.1f, zoomLevel - 0.1f); break; // Zoom Out
+        case 'r': rotationAngle += 5.0f; break; 
+        case 'l': rotationAngle -= 5.0f; break; 
+        case '+': case '=': zoomLevel += 0.1f; break; 
+        case '-': case '_': zoomLevel = max(0.1f, zoomLevel - 0.1f); break; 
         
-        // Рух хрестика (WASD)
         case 'w': moveCross(0, -10); break;
         case 's': moveCross(0, 10); break;
         case 'a': moveCross(-10, 0); break;
@@ -41,6 +41,7 @@ bool KeyProcessor::processKey(int key) {
 }
 
 ProcessingMode KeyProcessor::getMode() const { return currentMode; }
+bool KeyProcessor::isFaceDetectionEnabled() const { return faceDetectionMode; }
 float KeyProcessor::getRotation() const { return rotationAngle; }
 float KeyProcessor::getZoom() const { return zoomLevel; }
 cv::Point KeyProcessor::getCrossPos() const { return cv::Point(crossX, crossY); }

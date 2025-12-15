@@ -2,6 +2,7 @@
 * **ОС:** Linux (Ubuntu 20.04+)
 * **Залізо:** Веб-камера, клавіатура, миша
 * **ПЗ:** GCC, CMake, OpenCV 3.x або 4.x
+* **Утиліти:** `wget` (для завантаження моделей нейромережі)
 ### 1. Підготовка скриптів
 Всі скрипти повинні мати права на виконання. Якщо ні, виконайте команду:
 
@@ -33,11 +34,13 @@ chmod +x *.sh
 │   ├── CameraProvider.hpp
 │   ├── Display.hpp
 │   ├── FrameProcessor.hpp
+│   ├── FaceDetector.hpp
 │   └── KeyProcessor.hpp
 └── src
     ├── CameraProvider.cpp
     ├── Display.cpp
     ├── FrameProcessor.cpp
+    ├── FaceDetector.cpp
     ├── KeyProcessor.cpp
     └── main.cpp
 ```
@@ -55,5 +58,6 @@ chmod +x *.sh
 | r/l  | Обертання зображення (праворуч / ліворуч) |
 | +/-    | Зум (наближення / віддалення) |
 | w/a/s/d   | Переміщення прицілу (хрестика) по екрану |
+| F  | трекінг обличчя  |
 | ESC  | Вихід з програми |
 
