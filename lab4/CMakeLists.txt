@@ -6,12 +6,11 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(OpenCV REQUIRED)
 
-find_package(Threads REQUIRED)
-
 include_directories(${PROJECT_SOURCE_DIR}/include)
 
+# Явно перераховуємо файли або використовуємо GLOB (як у вас було)
 file(GLOB SOURCES "src/*.cpp")
 
 add_executable(VideoFiltersApp ${SOURCES})
 
-target_link_libraries(VideoFiltersApp ${OpenCV_LIBS} Threads::Threads)
+target_link_libraries(VideoFiltersApp ${OpenCV_LIBS})

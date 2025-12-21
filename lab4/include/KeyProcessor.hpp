@@ -1,10 +1,6 @@
 #pragma once
 #include <opencv2/opencv.hpp>
-#include <iostream> 
 
-using namespace std;
-
-// Режими обробки
 enum class ProcessingMode {
     None,
     Invert,
@@ -20,20 +16,24 @@ class KeyProcessor {
 private:
     ProcessingMode currentMode;
     bool shouldExit;
-    bool faceDetectionMode; 
+    bool faceDetectionEnabled; 
     
+  
     float rotationAngle;
     float zoomLevel;
-    int crossX, crossY; 
+    int crossX, crossY;
 
 public:
     KeyProcessor();
+    
     bool processKey(int key);
+    
     ProcessingMode getMode() const;
-    bool isFaceDetectionEnabled() const;
-
     float getRotation() const;
     float getZoom() const;
     cv::Point getCrossPos() const;
+    
+    bool isFaceDetectionEnabled() const; 
+    
     void moveCross(int dx, int dy);
 };

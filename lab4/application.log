@@ -1,0 +1,34 @@
+[2025-12-17 17:22:56] [INFO] Application Started
+[2025-12-17 17:22:56] [INFO] CameraProvider: Attempting to open camera ID 0
+[2025-12-17 17:22:57] [INFO] CameraProvider: Camera initialized successfully (640x480).
+[2025-12-17 17:22:57] [INFO] Main: Components initialized. Starting loop.
+[2025-12-17 17:22:59] [INFO] Mode: Normal
+[2025-12-17 17:22:59] [INFO] Mode: Invert
+[2025-12-17 17:22:59] [INFO] Mode: Blur
+[2025-12-17 17:23:00] [INFO] Mode: Canny
+[2025-12-17 17:23:00] [INFO] Mode: Sobel
+[2025-12-17 17:23:01] [INFO] Mode: Threshold
+[2025-12-17 17:23:01] [INFO] Mode: Glitch
+[2025-12-17 17:23:02] [INFO] Mode: PiP
+[2025-12-17 17:23:07] [INFO] Mode: Normal
+[2025-12-17 17:23:08] [INFO] Face Detection: ON
+[2025-12-17 17:23:14] [INFO] Face Detection: OFF
+[2025-12-17 17:23:16] [INFO] Main: ESC pressed. Stopping application.
+[2025-12-17 17:23:16] [INFO] Application Stopped
+[2025-12-17 17:23:16] [INFO] CameraProvider: Camera released.
+[2025-12-17 17:52:43] [INFO] Application Started
+[2025-12-17 17:52:43] [INFO] CameraProvider: Attempting to open camera ID 0
+[2025-12-17 17:52:45] [INFO] CameraProvider: Camera initialized successfully (640x480).
+[2025-12-17 17:52:45] [INFO] Main: Components initialized. Starting loop.
+[2025-12-17 17:52:46] [INFO] Mode: Normal
+[2025-12-17 17:52:46] [INFO] Mode: Invert
+[2025-12-17 17:52:47] [INFO] Mode: Blur
+[2025-12-17 17:52:47] [INFO] Mode: Canny
+[2025-12-17 17:52:48] [INFO] Mode: Sobel
+[2025-12-17 17:52:48] [INFO] Mode: Threshold
+[2025-12-17 17:52:48] [INFO] Mode: Glitch
+[2025-12-17 17:52:51] [INFO] Face Detection: ON
+[2025-12-17 17:52:55] [INFO] Face Detection: OFF
+[2025-12-17 17:52:56] [INFO] Main: ESC pressed. Stopping application.
+[2025-12-17 17:52:56] [INFO] Application Stopped
+[2025-12-17 17:52:56] [INFO] CameraProvider: Camera released.
