@@ -1,0 +1,18 @@
+{
+  "app": {
+    "window_name": "Video Filters App Pro",
+    "log_level": "INFO"
+  },
+  "camera": {
+    "id": 0,
+    "width": 640,
+    "height": 480,
+    "fps": 30
+  },
+  "face_detection": {
+    "enabled": true,
+    "proto_path": "res/deploy.prototxt",
+    "model_path": "res/res10_300x300_ssd_iter_140000.caffemodel",
+    "confidence_threshold": 0.5
+  }
+}	
