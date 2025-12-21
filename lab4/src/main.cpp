@@ -2,36 +2,42 @@
 #include "KeyProcessor.hpp"
 #include "FrameProcessor.hpp"
 #include "Display.hpp"
+#include "Logger.hpp"
+#include "ConfigManager.hpp" 
 #include <iostream>
 
 using namespace std;
 
 int main() {
-    cout << "Starting Video Filters App..." << endl;
-    cout << "Controls:" << endl;
-    cout << " [1-8] Change Modes (Normal, Invert, Blur, Canny, Sobel, Threshold, Glitch, PiP)" << endl;
-    cout << " [r/l] Rotate" << endl;
-    cout << " [+/-] Zoom" << endl;
-    cout << " [w/a/s/d] Move Crosshair" << endl;
-    cout << " [Mouse Drag] Draw Rectangles" << endl;
-    cout << " [ESC] Exit" << endl;
+    Logger& logger = Logger::getInstance();
+    ConfigManager& configMgr = ConfigManager::getInstance();
 
-    CameraProvider camera(0);
+    configMgr.loadConfig("settings.json");
+    
+    logger.info("Application Started");
+
+    CameraConfig camConfig = configMgr.getCameraConfig();
+    
+    CameraProvider camera(camConfig.id); 
+    
     if (!camera.initialize()) {
+        logger.error("Main: Failed to initialize camera. Exiting.");
         return -1;
     }
 
     KeyProcessor keyProcessor;
     FrameProcessor frameProcessor;
-    Display display("Video Filter App");
+    
+    string winName = configMgr.getAppConfig().windowName;
+    Display display(winName);
     
     display.setup(frameProcessor);
 
     while (camera.isOpened()) {
         cv::Mat frame = camera.getFrame();
         if (frame.empty()) {
-            cerr << "Captured empty frame" << endl;
-            break;
+            logger.warn("Main: Captured empty frame.");
+            continue;
         }
 
         frameProcessor.process(frame, keyProcessor);
@@ -42,6 +48,7 @@ int main() {
             break;
         }
     }
-
+    
+    logger.info("Application Stopped");
     return 0;
 }

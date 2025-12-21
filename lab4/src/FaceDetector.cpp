@@ -1,8 +1,6 @@
 #include "FaceDetector.hpp"
 #include <iostream>
-#include <chrono> // for delay
-
-
+#include <chrono> 
 
 FaceDetector::FaceDetector() : running(false), hasNewFrame(false), modelLoaded(false) {}
 
