@@ -43,7 +43,7 @@ int main() {
         frameProcessor.process(frame, keyProcessor);
         display.show(frame);
 
-        int key = cv::waitKey(30);
+        int key = cv::waitKey(1);
         if (keyProcessor.processKey(key)) {
             break;
         }
